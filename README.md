@@ -1,8 +1,6 @@
 # Gods-will-Bardium-Mobile-Ver
 
-This repository contains a mobile-compatible conversion of the original UI library script from Bardium.  
-**Project topic:**  
-The main goal of this project is to adapt Bardium's UI script for mobile use, providing a seamless experience for users on portable devices.
+This is a mobile compatible version of Bardium's GODS WILL Script.
 
 ---
 
@@ -32,4 +30,4 @@ The main goal of this project is to adapt Bardium's UI script for mobile use, pr
 
 ---
 
-*Thank you for checking out this project! For inquiries or suggestions, please contact me via YouTube or GitHub.*
+*Thank you for checking out this project! For inquiries or suggestions, please contact me on YouTube or GitHub.*
