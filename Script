@@ -1,0 +1,451 @@
+-- Load Rayfield UI
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Gods Will Mobile",
+    LoadingTitle = "Gods Will Mobile",
+    LoadingSubtitle = "by bardium",
+    ConfigurationSaving = {
+        Enabled = false
+    },
+    Discord = {
+        Enabled = true,
+        Invite = "hSm6DyF6X7"
+    },
+    KeySystem = false,
+})
+
+-- Utility: Get most common walk speed
+local function getGlobalWalkSpeed()
+    local client = game.Players.LocalPlayer
+    local allWalkSpeeds = {}
+    for _, v in ipairs(game.Players:GetPlayers()) do
+        if v ~= client and v.Character and v.Character:FindFirstChildOfClass('Humanoid') then
+            table.insert(allWalkSpeeds, tonumber(v.Character:FindFirstChildOfClass('Humanoid').WalkSpeed))
+        end
+    end
+    local counts = {}
+    for _, ws in ipairs(allWalkSpeeds) do counts[ws] = (counts[ws] or 0) + 1 end
+    local maxWs, maxCount = 4, 0
+    for ws, count in pairs(counts) do if count > maxCount then maxWs, maxCount = ws, count end end
+    return tonumber(maxWs)
+end
+
+local client = game.Players.LocalPlayer
+local repStorage = game:GetService('ReplicatedStorage')
+local tpService = game:GetService('TeleportService')
+local virtualInputManager = game:GetService("VirtualInputManager")
+
+-- Tabs/Sections
+local MainTab = Window:CreateTab("Main", 4483362458)
+
+local SettingsTab = Window:CreateTab("UI Settings", 4483362458)
+
+-- Toggles storage for thread access
+local Toggles = {}
+
+-- LEGIT SECTION
+local LegitSection = MainTab:CreateSection("Legit")
+
+Toggles.DarumaGameFreeze = MainTab:CreateToggle({
+    Name = "Freeze During Daruma Game",
+    CurrentValue = false,
+    Callback = function(Value) Toggles.DarumaGameFreeze.Value = Value end,
+})
+
+Toggles.FreezeDelay = MainTab:CreateSlider({
+    Name = "Freeze Delay",
+    Range = {0, 0.65},
+    Increment = 0.01,
+    Suffix = "s",
+    CurrentValue = 0.25,
+    Callback = function(Value) Toggles.FreezeDelay.Value = Value end,
+})
+
+Toggles.HighlightCorrectDoors = MainTab:CreateToggle({
+    Name = "Highlight Correct Doors",
+    CurrentValue = false,
+    Callback = function(Value) Toggles.HighlightCorrectDoors.Value = Value end,
+})
+
+Toggles.HighlightCorrectChairs = MainTab:CreateToggle({
+    Name = "Highlight Correct Chairs",
+    CurrentValue = false,
+    Callback = function(Value) Toggles.HighlightCorrectChairs.Value = Value end,
+})
+
+Toggles.VoteMostPopular = MainTab:CreateToggle({
+    Name = "Vote Most Popular",
+    CurrentValue = false,
+    Callback = function(Value) Toggles.VoteMostPopular.Value = Value end,
+})
+
+MainTab:CreateButton({
+    Name = "Finish Sled Game",
+    Callback = function()
+        pcall(function()
+            local oldPivot = client.Character:GetPivot()
+            local coins = workspace:FindFirstChild('Coins')
+            if coins then
+                for _, v in ipairs(coins:GetChildren()) do
+                    if v:IsA('BasePart') then client.Character:PivotTo(v:GetPivot()) task.wait() end
+                end
+            end
+            client.Character:PivotTo(oldPivot)
+        end)
+    end,
+})
+
+-- MISC SECTION
+local MiscSection = MainTab:CreateSection("Misc")
+
+Toggles.CheckIfInGame = MainTab:CreateToggle({
+    Name = "Check if in game",
+    CurrentValue = true,
+    Callback = function(Value) Toggles.CheckIfInGame.Value = Value end,
+})
+
+MainTab:CreateButton({
+    Name = "Collect All Coins",
+    Callback = function()
+        pcall(function()
+            local oldPivot = client.Character:GetPivot()
+            local coins = workspace:FindFirstChild('Coins')
+            if coins then
+                for _, v in ipairs(coins:GetChildren()) do
+                    if v:IsA('BasePart') then client.Character:PivotTo(v:GetPivot()) task.wait() end
+                end
+            end
+            client.Character:PivotTo(oldPivot)
+        end)
+    end,
+})
+
+MainTab:CreateButton({
+    Name = "Fix Speed",
+    Callback = function()
+        if client.Character and client.Character:FindFirstChildOfClass("Humanoid") then
+            client.Character.Humanoid.WalkSpeed = getGlobalWalkSpeed()
+        end
+    end,
+})
+
+-- BLATANT SECTION
+local BlatantSection = MainTab:CreateSection("Blatant")
+
+MainTab:CreateButton({
+    Name = "Finish Daruma Game",
+    Callback = function()
+        pcall(function()
+            local button = workspace.DarumaGameMap.GameFunctions.DarumaDoll.ActualThing.Button
+            if button and button:FindFirstChildOfClass('ProximityPrompt') then
+                local prompt = button:FindFirstChildOfClass('ProximityPrompt')
+                local originalPivot = client.Character:GetPivot()
+                client.Character:PivotTo(workspace.DarumaGameMap.GameFunctions.DarumaDoll:GetPivot() * CFrame.new(0, -3, 2))
+                for _, part in ipairs(client.Character:GetDescendants()) do if part:IsA('BasePart') then part.CanCollide = false end end
+                Rayfield:Notify({Title='Daruma', Content='Facing the daruma doll button...', Duration=3})
+                repeat
+                    prompt.Enabled = true
+                    prompt.RequiresLineOfSight = false
+                    virtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, nil)
+                    virtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, nil)
+                    task.wait(0.1)
+                until not button:FindFirstChildOfClass('ProximityPrompt') or workspace.DarumaGameStart.Value == false
+                for _, part in ipairs(client.Character:GetDescendants()) do if part:IsA('BasePart') then part.CanCollide = true end end
+                client.Character:PivotTo(originalPivot)
+            end
+        end)
+    end,
+})
+
+Toggles.TPToCorrectDoor = MainTab:CreateToggle({
+    Name = "TP Correct Door Room",
+    CurrentValue = false,
+    Callback = function(Value) Toggles.TPToCorrectDoor.Value = Value end,
+})
+
+MainTab:CreateButton({
+    Name = "Disappear From Monkey Boss Fight",
+    Callback = function()
+        pcall(function()
+            client.Character:PivotTo(CFrame.new(client.Character:GetPivot().Position.X, 10, client.Character:GetPivot().Position.Z))
+        end)
+    end,
+})
+
+MainTab:CreateButton({
+    Name = "TP To Rocket",
+    Callback = function()
+        pcall(function()
+            if workspace.Effects:FindFirstChild('Rocket') then
+                client.Character:PivotTo(workspace.Effects.Rocket:GetPivot())
+            else
+                Rayfield:Notify({Title="Rocket", Content="Rocket not found.", Duration=3})
+            end
+        end)
+    end,
+})
+
+MainTab:CreateButton({
+    Name = "Disappear From Hide and Seek",
+    Callback = function()
+        pcall(function()
+            client.Character:PivotTo(CFrame.new(-1600, 40, -2800))
+        end)
+    end,
+})
+
+MainTab:CreateButton({
+    Name = "TP To Opposite Team Dodgeball",
+    Callback = function()
+        pcall(function()
+            local oppositeTeam = 1
+            for _, v in ipairs(game.Players:GetPlayers()) do
+                if v.Character and type(v.Character:GetAttribute('teamdodgeball')) == 'number' and v.Character:GetAttribute('teamdodgeball') ~= client.Character:GetAttribute('teamdodgeball') then
+                    oppositeTeam = tostring(v.Character:GetAttribute('teamdodgeball'))
+                end
+            end
+            local desiredPivot = client.Character:GetPivot()
+            local lowestNumber = 999
+            if workspace.dodgeballmap.spawns:FindFirstChild('team' .. oppositeTeam) then
+                for _, v in ipairs(workspace.dodgeballmap.spawns['team' .. oppositeTeam]:GetChildren()) do
+                    if v:IsA('BasePart') and not v:GetAttribute('spawned') and tonumber(v.Name) < lowestNumber then
+                        lowestNumber = tonumber(v.Name)
+                        desiredPivot = v:GetPivot()
+                    end
+                end
+            end
+            client.Character:PivotTo(desiredPivot)
+        end)
+    end,
+})
+
+MainTab:CreateButton({
+    Name = "Disappear From Hot Potato Zone",
+    Callback = function()
+        pcall(function()
+            client.Character:PivotTo(CFrame.new(-1600, 40, -2800))
+        end)
+    end,
+})
+
+Toggles.AntiPotato = MainTab:CreateToggle({
+    Name = "Anti Hot Potato",
+    CurrentValue = false,
+    Callback = function(Value) Toggles.AntiPotato.Value = Value end,
+})
+
+MainTab:CreateButton({
+    Name = "Final Round Fight No Fall",
+    Callback = function()
+        pcall(function()
+            if workspace:FindFirstChild('ArenaPart4') then
+                workspace.ArenaPart4.Transparency = 0.5
+                workspace.ArenaPart4.BrickColor = BrickColor.new('Lime green')
+                workspace.ArenaPart4.Size = Vector3.new(3, 2000, 2000)
+            end
+        end)
+    end,
+})
+
+-- TROLL SECTION
+local TrollSection = MainTab:CreateSection("Troll")
+
+Toggles.RequestChairAura = MainTab:CreateToggle({
+    Name = "Throw Chair Aura",
+    CurrentValue = false,
+    Callback = function(Value) Toggles.RequestChairAura.Value = Value end,
+})
+
+Toggles.DeleteChairAura = MainTab:CreateToggle({
+    Name = "Delete Chair Aura",
+    CurrentValue = false,
+    Callback = function(Value) Toggles.DeleteChairAura.Value = Value end,
+})
+
+-- THREADS / FEATURE LOGIC
+task.spawn(function()
+    while true do
+        task.wait()
+        -- Daruma Game Freeze
+        if Toggles.DarumaGameFreeze.Value then
+            if workspace:FindFirstChild('DarumaGameStart') and workspace.DarumaGameStart.Value then
+                local humanoid = client.Character and client.Character:FindFirstChildOfClass('Humanoid')
+                if humanoid and workspace.NotLooking then
+                    if workspace.NotLooking.Value == false then
+                        humanoid.WalkSpeed = 0
+                        Rayfield:Notify({Title="Daruma", Content="Stop moving or you will die. Do not hold any keys.", Duration=3})
+                        repeat task.wait() until workspace.NotLooking.Value == true or not Toggles.DarumaGameFreeze.Value
+                    else
+                        humanoid.WalkSpeed = getGlobalWalkSpeed()
+                        Rayfield:Notify({Title="Daruma", Content="You can move again.", Duration=3})
+                    end
+                end
+            end
+        end
+
+        -- Highlight Correct Doors
+        if Toggles.HighlightCorrectDoors.Value then
+            if workspace:FindFirstChild('CorrectDoor') and workspace:FindFirstChild('MainRooms') then
+                local diamondRooms = workspace.MainRooms:FindFirstChild('DiamondPlateRooms', true)
+                if diamondRooms then
+                    for _, room in ipairs(diamondRooms:GetChildren()) do
+                        local door = room:FindFirstChild('ActualDoor') and room.ActualDoor:FindFirstChild('Door')
+                        if door and door:FindFirstChildOfClass('Decal') then
+                            if door:FindFirstChildOfClass('Decal').Texture == workspace.CorrectDoor.Value then
+                                if not room.ActualDoor:FindFirstChild('correctDoorHighlight') then
+                                    local highlight = Instance.new('BoxHandleAdornment', room.ActualDoor)
+                                    highlight.Name = 'correctDoorHighlight'
+                                    highlight.Adornee = room.ActualDoor
+                                    highlight.AlwaysOnTop = true
+                                    highlight.Size = room.ActualDoor:GetExtentsSize()
+                                    highlight.Transparency = 0.5
+                                    highlight.Color = BrickColor.new('Lime green')
+                                end
+                            else
+                                local oldHighlight = room.ActualDoor:FindFirstChild('correctDoorHighlight')
+                                if oldHighlight then oldHighlight:Destroy() end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        -- TP To Correct Door
+        if Toggles.TPToCorrectDoor.Value then
+            if workspace:FindFirstChild('CorrectDoor') and workspace:FindFirstChild('MainRooms') then
+                if workspace.DoorsGameOn.Value then
+                    local diamondRooms = workspace.MainRooms:FindFirstChild('DiamondPlateRooms', true)
+                    if diamondRooms then
+                        for _, room in ipairs(diamondRooms:GetChildren()) do
+                            local door = room:FindFirstChild('ActualDoor') and room.ActualDoor:FindFirstChild('Door')
+                            if door and door:FindFirstChildOfClass('Decal') and door:FindFirstChildOfClass('Decal').Texture == workspace.CorrectDoor.Value then
+                                client.Character:PivotTo(room.Slider:GetPivot() * CFrame.new(0, 5, 0))
+                            end
+                        end
+                    end
+                else
+                    Rayfield:Notify({Title="Doors", Content="Doors game is over or hasn't started.", Duration=3})
+                    Toggles.TPToCorrectDoor:Set(false)
+                end
+            end
+        end
+
+        -- Highlight Correct Chairs
+        if Toggles.HighlightCorrectChairs.Value then
+            if workspace:FindFirstChild('MusicalChairsMap') and workspace.MusicalChairsMap:FindFirstChild('Chairs') then
+                for _, chair in ipairs(workspace.MusicalChairsMap.Chairs:GetChildren()) do
+                    local mainPart = chair:FindFirstChild('school-room-chair') and chair['school-room-chair']:FindFirstChild('Meshes/Grime desk_Chair wood.001')
+                    if mainPart then
+                        mainPart.BrickColor = BrickColor.new('Lime green')
+                        mainPart.Material = Enum.Material.Neon
+                        mainPart.Transparency = 0
+                        mainPart.TextureID = ''
+                        mainPart.Size = Vector3.new(3,3,3)
+                    end
+                end
+            end
+        end
+
+        -- Vote Most Popular
+        if Toggles.VoteMostPopular.Value then
+            if workspace:FindFirstChild('VOTINGON') and workspace.VOTINGON.Value then
+                local highestVotes = 0
+                local mostPopular = nil
+                for _, p in ipairs(game.Players:GetPlayers()) do
+                    if p ~= client then
+                        local votes = tonumber(p:GetAttribute('Votes')) or 0
+                        if votes > highestVotes then
+                            mostPopular = p
+                            highestVotes = votes
+                        end
+                    end
+                end
+                if mostPopular then repStorage.Remotes.VotePersonOut:FireServer(mostPopular.Name) end
+            end
+        end
+
+        -- Delete Chair Aura
+        if Toggles.DeleteChairAura.Value then
+            local sethidden = sethiddenproperty or set_hidden_property or set_hidden_prop
+            if sethidden then
+                if workspace:FindFirstChild('MusicalChairsMap') then
+                    for _, folderName in ipairs({'Chairs','FakeChairs'}) do
+                        local folder = workspace.MusicalChairsMap:FindFirstChild(folderName)
+                        if folder then
+                            for _, chair in pairs(folder:GetDescendants()) do
+                                local seat = chair:FindFirstChild('Seat')
+                                if seat and not seat.Anchored and not seat:FindFirstChild('BodyPosition') then
+                                    local bp = Instance.new('BodyPosition', seat)
+                                    bp.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                                    bp.Position = Vector3.new(1500,0,1500)
+                                end
+                            end
+                        end
+                    end
+                end
+            else
+                Rayfield:Notify({Title="Error", Content='Incompatible Exploit: missing sethiddenproperty', Duration=5})
+                Toggles.DeleteChairAura:Set(false)
+            end
+        end
+
+        -- Request Chair Aura
+        if Toggles.RequestChairAura.Value then
+            repStorage.RequestChair:FireServer()
+        end
+
+        -- Anti-Potato
+        if Toggles.AntiPotato.Value then
+            local effect = workspace:FindFirstChild('Effects') and workspace.Effects:FindFirstChild('PotatoBomb')
+            if effect and effect:FindFirstChild('PotatoWeld') and effect.PotatoWeld.Part0 and effect.PotatoWeld.Part0:IsDescendantOf(client.Character) then
+                for _, v in ipairs(game.Players:GetPlayers()) do
+                    if v ~= client and v.Character and v.Character:FindFirstChild('Humanoid') then
+                        local oldPivot = client.Character:GetPivot()
+                        repeat
+                            client.Character:PivotTo(v.Character:GetPivot())
+                            task.wait()
+                        until not workspace.Effects:FindFirstChild('PotatoBomb') or not Toggles.AntiPotato.Value
+                        client.Character:PivotTo(oldPivot)
+                    end
+                end
+            end
+        end
+    end
+end)
+
+
+-- UI SETTINGS SECTION
+local UISettingsSection = SettingsTab:CreateSection("UI Settings")
+
+local Button = SettingsTab:CreateButton({
+   Name = "Unload",
+   Callback = function()
+   Rayfield:Destroy()
+   end,
+})
+
+local Button = SettingsTab:CreateButton({
+    Name = "Copy Discord",
+    Callback = function()
+        setclipboard("https://discord.gg/hSm6DyF6X7")
+    end,
+})
+
+local Button = SettingsTab:CreateButton({
+    Name = "Return To Lobby",
+    Callback = function()
+        tpService:Teleport(12826178482, client)
+    end,
+})
+
+local UICreditsSection = SettingsTab:CreateSection("Credits")
+
+local Paragraph = SettingsTab:CreateParagraph({Title = "Credits", Content = "This script is Originally made By bardium. This is a mobile compatible version since us mobile users can't drag the pc ver."})
+
+Rayfield:Notify({
+    Title = "Gods Will Mobile",
+    Content = "Loaded script",
+    Duration = 5
+})
