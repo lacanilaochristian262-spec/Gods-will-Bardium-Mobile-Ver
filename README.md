@@ -14,8 +14,7 @@ This is a mobile compatible version of Bardium's GODS WILL Script.
 
 - **Original Script Owner:** Bardium  
 - **Mobile Conversion by:** loal  
-- This repository serves as a demonstration and distribution point for the mobile-adapted UI library.
-
+AND PLEASE. I did not make this script. The original owner of this script is already displayed.
 ---
 
 ## 🔗 YouTube Links
