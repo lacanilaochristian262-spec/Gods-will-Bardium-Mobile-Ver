@@ -1,0 +1,5 @@
+[[--
+• SCRIPT | ✓
+]]--
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/lacanilaochristian262-spec/Gods-will-Bardium-Mobile-Ver/refs/heads/main/Script.lua"))()
