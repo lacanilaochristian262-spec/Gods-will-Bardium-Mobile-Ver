@@ -1,4 +1,10 @@
--- Load Rayfield UI
+
+--[[
+Converted By Loal
+Made by Bardium
+G.O.D.S W.I.L.L
+]]--
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
